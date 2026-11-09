@@ -1,0 +1,27 @@
+{'ports': ['gnd', 'ibias', 'sky130_gnd', 'vin', 'vout', 'vref'], 'fb_net': '\\$110', 'fb_node': '\\$110', 'devices': 185, 'R': 4023, 'C': 22567}
+loop IL=  0.1 mA: T0=68.4 dB  UGF=43.3 kHz  PM=89.7 deg  GM=inf dB
+loop IL=    1 mA: T0=58.5 dB  UGF=126.8 kHz  PM=91.6 deg  GM=inf dB
+loop IL=   10 mA: T0=58.2 dB  UGF=817.4 kHz  PM=98.6 deg  GM=inf dB
+loop IL=   50 mA: T0=45.7 dB  UGF=1368.6 kHz  PM=101.6 deg  GM=inf dB
+PSRR IL=0.1 mA: dc 36.0, 1kHz 36.0, 100kHz 43.9, min 36.0, f_min 1.0
+PSRR IL=50 mA: dc 33.2, 1kHz 33.2, 100kHz 33.3, min 33.2, f_min 1.0
+Traceback (most recent call last):
+  File "C:\Qiskit\ldo_sky130\scripts\run_postlayout.py", line 16, in <module>
+    sim_all.main(netfn=core_pex, esrs=[0, 10e-3, 1.0], il_step="0.5m", vin_step=0.01)
+  File "C:\Qiskit\ldo_sky130\scripts\sim_all.py", line 177, in main
+    d = dc_sweep("vvin vin 0 1.8\niload vout 0 0.1m", f"iload 0.1m 50m {il_step}", "v(vout)",
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Qiskit\ldo_sky130\scripts\sim_all.py", line 84, in dc_sweep
+    run(net, tag)
+  File "C:\Qiskit\ldo_sky130\scripts\spice.py", line 16, in run
+    res = subprocess.run([NGSPICE, "-b", cir.name], cwd=SIM,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>\Lib\subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>\Lib\subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>\Lib\subprocess.py", line 1630, in _communicate
+    raise TimeoutExpired(self.args, orig_timeout)
+subprocess.TimeoutExpired: Command '['C:\\ngspice\\ngspice-46_64\\Spice64\\bin\\ngspice_con.exe', '-b', 'loadreg_pex.cir']' timed out after 600 seconds

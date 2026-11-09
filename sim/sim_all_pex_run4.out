@@ -1,0 +1,14 @@
+{'ports': ['gnd', 'ibias', 'sky130_gnd', 'vin', 'vout', 'vref'], 'fb_net': '\\$110', 'fb_node': '\\$110', 'g_net': '\\$108', 'devices': 185, 'R': 4023, 'C': 22567}
+resume: kept ['loop', 'psrr', 'loadreg', 'linereg', 'iq']
+C:\Qiskit\ldo_sky130\scripts\sim_all.py:153: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  ax[0].legend(fontsize=8)
+C:\Qiskit\ldo_sky130\scripts\sim_all.py:185: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  ax.legend()
+load reg: {'v_light': 1.50084988, 'v_heavy': 1.49477382, 'dV': 0.00607606000000005}
+line IL=0.1 mA: slope=16.46 mV/V, VDO(1%)=72 mV, VOUT(1.7)=1.4989
+line IL=50 mA: slope=25.12 mV/V, VDO(1%)=170 mV, VOUT(1.7)=1.4915
+Iq (IL = 0.1 mA subtracted): {'at_1p8': 6.4304994e-05, 'max': 6.462106099999999e-05}
+tran: {'v_light': 1.50074638, 'v_heavy': 1.49474112, 'v_end': 1.50074638, 'undershoot': 0.0, 'overshoot': 9.99999993922529e-09, 'dip_from_initial': 0.006005260000000012, 'peak_from_heavy': 0.0060052699999999515, 'settle_up': 0.0, 'settle_down': 1.0899999999999913e-06}
+ESR sweep IL=0.1 mA: 0m: PM 89 GM 52dB, 10m: PM 90 GM infdB, 1000m: PM 126 GM infdB
+ESR sweep IL=50 mA: 0m: PM 93 GM infdB, 10m: PM 102 GM infdB, 1000m: PM 62 GM infdB
+exit=0

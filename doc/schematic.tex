@@ -1,0 +1,81 @@
+% sky130 LDO schematic (circuitikz); \input by ldo_sky130.tex
+\begin{circuitikz}[scale=0.88, transform shape, american]
+  \def\VIN{6.4}
+  % ------------------------------------------------ rails
+  \draw (-0.6,\VIN) -- (14.2,\VIN) node[right] {$V_{IN}$};
+  \draw (-0.6,0) -- (14.2,0);
+  \node[ground] at (7.0,0) {};
+
+  % ------------------------------------------------ bias: I_BIAS into the NMOS diode MBN, mirrored to MT
+  \draw (0,\VIN) to[american current source, l_={$I_{BIAS}$}] (0,2.4);
+  \node[nmos, xscale=-1] (mbn) at (0,1.1) {};
+  \node[left] at (-0.2,0.85) {\scriptsize $M_{BN}$};
+  \draw (0,2.4) -- (mbn.D);
+  \draw (mbn.S) -- (0,0);
+  \draw (0,2.05) node[circ] {} -| (0.9,1.1);
+  \draw (mbn.G) -- (2.1,1.1);
+  \node[nmos] (mt) at (2.6,1.1) {};
+  \node[right] at (2.7,0.85) {\scriptsize $M_T$};
+  \draw (mt.S) -- (2.6,0);
+  \draw (mt.D) -- (2.6,2.2);
+
+  % ------------------------------------------------ NMOS input pair: M1 gate = V_REF (left), M2 gate = V_FB (right)
+  \draw (1.8,2.2) -- (3.4,2.2);
+  \node[nmos] (m1) at (1.8,3.0) {};
+  \node[nmos, xscale=-1] (m2) at (3.4,3.0) {};
+  \draw (m1.S) -- (1.8,2.2);
+  \draw (m2.S) -- (3.4,2.2);
+  \node[right] at (1.85,3.35) {\scriptsize $M_1$};
+  \node[left] at (3.35,3.35) {\scriptsize $M_2$};
+  \draw (m1.G) -- ++(-0.1,0) node[left] {\scriptsize $V_{REF}$};
+  \draw (m2.G) -- ++(0.1,0) node[right] {\scriptsize $V_{FB}$};
+
+  % ------------------------------------------------ PMOS mirror load: M3 (diode), M4
+  \node[pmos, xscale=-1] (m3) at (1.8,5.3) {};
+  \node[pmos] (m4) at (3.4,5.3) {};
+  \node[left] at (1.7,5.55) {\scriptsize $M_3$};
+  \node[right] at (3.5,5.55) {\scriptsize $M_4$};
+  \draw (m3.S) -- (1.8,\VIN);
+  \draw (m4.S) -- (3.4,\VIN);
+  \draw (m1.D) -- (m3.D);
+  \draw (m2.D) -- (m4.D);
+  \draw (m3.G) -- (m4.G);
+  \draw (1.8,4.3) node[circ] {} -| (2.6,5.3) node[circ] {};
+  \node[left] at (1.8,4.3) {\scriptsize $d_1$};
+  \draw (3.4,4.15) node[circ] {} -- (4.6,4.15) |- (5.0,1.1);
+  \node[above] at (4.1,4.15) {\scriptsize $V_{EA}$};
+
+  % ------------------------------------------------ gate driver: MCS (common source), MD (diode, 1:N with MP), MBL (bleeder)
+  \node[nmos] (mcs) at (5.5,1.1) {};
+  \node[right] at (5.6,0.85) {\scriptsize $M_{CS}$};
+  \draw (mcs.S) -- (5.5,0);
+  \draw (mcs.D) -- (5.5,4.1);
+  \node[pmos, xscale=-1] (md) at (5.5,5.3) {};
+  \node[left] at (5.4,5.55) {\scriptsize $M_D$};
+  \draw (md.S) -- (5.5,\VIN);
+  \draw (md.D) -- (5.5,4.1) node[circ] {};
+  \draw (md.G) -- ++(0.3,0) coordinate (mdg) -- (mdg |- 0,4.1) node[circ] {};
+  \node[pmos] (mbl) at (7.3,5.3) {};
+  \node[right] at (7.4,5.55) {\scriptsize $M_{BL}$};
+  \draw (mbl.S) -- (7.3,\VIN);
+  \draw (mbl.D) -- (7.3,4.1);
+  \draw (2.6,5.3) -- (2.6,5.95) -- (6.6,5.95) |- (mbl.G);
+  \draw (5.5,4.1) -- (8.6,4.1);
+  \node[below] at (6.6,4.1) {\scriptsize $V_G$};
+
+  % ------------------------------------------------ pass device MP
+  \node[pmos] (mp) at (9.1,5.3) {};
+  \node[right] at (9.2,5.55) {\scriptsize $M_P$};
+  \draw (mp.S) -- (9.1,\VIN);
+  \draw (8.6,4.1) |- (mp.G);
+  \draw (mp.D) -- (9.1,3.75) node[circ] {} -- (14.0,3.75) node[right] {$V_{OUT}$};
+
+  % ------------------------------------------------ divider R1 / R2 (xhigh_po units)
+  \draw (10.4,3.75) node[circ] {} to[R, l_=$R_1$] (10.4,1.9) node[circ] {}
+        to[R, l_=$R_2$] (10.4,0);
+  \draw (10.4,1.9) -- (11.0,1.9) node[right] {\scriptsize $V_{FB}$};
+
+  % ------------------------------------------------ off chip: CL + ESR, IL
+  \draw (12.2,3.75) node[circ] {} to[C, l_=$C_L$] (12.2,1.9) to[R, l_=$R_{ESR}$] (12.2,0);
+  \draw (13.5,3.75) node[circ] {} to[american current source, l_=$I_L$] (13.5,0);
+\end{circuitikz}

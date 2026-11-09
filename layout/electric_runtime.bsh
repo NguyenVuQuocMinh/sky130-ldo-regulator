@@ -1,0 +1,199 @@
+// Electric BeanShell runtime: reads a command file written by gen_layout.py and
+// builds the cells in Electric's skywater130 technology.
+//
+// Command lines (whitespace separated, '#' = comment):
+//   LIB  <file.jelib path> <libname>
+//   CELL <name> <view>                 view = lay | sch ; makes it the current cell
+//   N    <id> <proto> <x> <y> <w> <h>  primitive node (proto in skywater130, or
+//                                      "sch:<name>" for a schematic primitive)
+//   SZ   <id> <W> <L>                  transistor size (layout Fet or schematic)
+//   FN   <id> <function>               schematic transistor function: nmos | pmos | res
+//   VAR  <id> <key> <value>            string variable on a node (e.g. ATTR_W)
+//   I    <id> <cell{view}> <x> <y>     instance of a cell of this library
+//   A    <arc> <width> <idA> <portA> <xA> <yA> <idB> <portB> <xB> <yB>
+//                                      arc = skywater130 arc name or "sch:wire"
+//   E    <name> <id> <port> <char>     export; char = in|out|bidir|pwr|gnd
+//   CVAR <key> <value>                 string variable on the current cell (NCC annotations)
+//   SAVE
+//   GDS  <path>
+//   DRC  <cell{view}>
+//   DUMP <cell{view}> <path>           flattened polygons: layer xlo ylo xhi yhi
+//   NCC  <cellA{view}> <cellB{view}>
+import com.sun.electric.database.hierarchy.*;
+import com.sun.electric.database.topology.*;
+import com.sun.electric.database.variable.*;
+import com.sun.electric.database.geometry.*;
+import com.sun.electric.database.prototype.*;
+import com.sun.electric.technology.*;
+import com.sun.electric.technology.technologies.Schematics;
+import com.sun.electric.database.*;
+import com.sun.electric.tool.io.*;
+import com.sun.electric.tool.io.output.*;
+import com.sun.electric.tool.drc.*;
+import com.sun.electric.tool.ncc.*;
+import com.sun.electric.tool.user.*;
+import com.sun.electric.util.math.Orientation;
+import java.awt.geom.*;
+import java.io.*;
+
+Technology tech = Technology.findTechnology("skywater130");
+Technology sch = Schematics.tech();
+EditingPreferences ep = EditingPreferences.getInstance();
+Library lib = null;
+Cell cur = null;
+HashMap ids = new HashMap();
+int nerr = 0;
+
+PortInst port(String id, String pname) {
+    NodeInst ni = (NodeInst) ids.get(id);
+    if (ni == null) { System.out.println("ERR unknown node " + id); nerr++; return null; }
+    if (pname.equals("-")) return ni.getOnlyPortInst();
+    PortInst pi = ni.findPortInst(pname);
+    if (pi == null) { System.out.println("ERR no port " + pname + " on " + id); nerr++; }
+    return pi;
+}
+
+void dumpCell(Cell c, AffineTransform at, PrintWriter pw) {
+    Iterator it = c.getNodes();
+    while (it.hasNext()) {
+        NodeInst ni = (NodeInst) it.next();
+        if (ni.isCellInstance()) {
+            AffineTransform t2 = new AffineTransform(at);
+            t2.concatenate(ni.transformOut());
+            dumpCell((Cell) ni.getProto(), t2, pw);
+            continue;
+        }
+        PrimitiveNode pn = (PrimitiveNode) ni.getProto();
+        if (pn.getTechnology() != tech) continue;
+        // shapes come back in cell coordinates; all nodes here are unrotated
+        Poly[] ps = tech.getShapeOfNode(ni);
+        for (int i = 0; i < ps.length; i++) {
+            Rectangle2D b = at.createTransformedShape(ps[i].getBounds2D()).getBounds2D();
+            pw.println(ps[i].getLayer().getName() + " " + b.getMinX() + " " + b.getMinY() + " " + b.getMaxX() + " " + b.getMaxY());
+        }
+    }
+    Iterator ai = c.getArcs();
+    while (ai.hasNext()) {
+        ArcInst a = (ArcInst) ai.next();
+        if (a.getProto().getTechnology() != tech) continue;
+        Poly[] ps = tech.getShapeOfArc(a);
+        for (int i = 0; i < ps.length; i++) {
+            Rectangle2D b = at.createTransformedShape(ps[i].getBounds2D()).getBounds2D();
+            pw.println(ps[i].getLayer().getName() + " " + b.getMinX() + " " + b.getMinY() + " " + b.getMaxX() + " " + b.getMaxY());
+        }
+    }
+}
+
+Cell findCell(String spec) {
+    Cell c = lib.findNodeProto(spec);
+    if (c == null) { System.out.println("ERR no cell " + spec); nerr++; }
+    return c;
+}
+
+String cmdPath = System.getProperty("ldo.cmd");
+BufferedReader br = new BufferedReader(new FileReader(cmdPath));
+String line;
+int lineNo = 0;
+while ((line = br.readLine()) != null) {
+    lineNo++;
+    line = line.trim();
+    if (line.length() == 0 || line.startsWith("#")) continue;
+    String[] t = line.split("\\s+");
+    String op = t[0];
+    if (op.equals("LIB")) {
+        lib = Library.newInst(t[2], new File(t[1]).toURI().toURL());
+    } else if (op.equals("CELL")) {
+        cur = Cell.makeInstance(ep, lib, t[1] + "{" + t[2] + "}");
+        cur.setTechnology(t[2].equals("lay") ? tech : sch);
+        ids = new HashMap();
+    } else if (op.equals("N")) {
+        PrimitiveNode pn;
+        if (t[2].startsWith("sch:")) pn = sch.findNodeProto(t[2].substring(4));
+        else pn = tech.findNodeProto(t[2]);
+        if (pn == null) { System.out.println("ERR line " + lineNo + " no proto " + t[2]); nerr++; continue; }
+        double w = Double.parseDouble(t[5]);
+        double h = Double.parseDouble(t[6]);
+        if (w <= 0) w = pn.getDefWidth(ep);
+        if (h <= 0) h = pn.getDefHeight(ep);
+        NodeInst ni = NodeInst.makeInstance(pn, ep, new Point2D.Double(Double.parseDouble(t[3]), Double.parseDouble(t[4])), w, h, cur, Orientation.IDENT, t[1]);
+        if (ni == null) { System.out.println("ERR line " + lineNo + " node failed " + t[1]); nerr++; continue; }
+        ids.put(t[1], ni);
+    } else if (op.equals("FN")) {
+        NodeInst ni = (NodeInst) ids.get(t[1]);
+        PrimitiveNode.Function f = null;
+        if (t[2].equals("nmos")) f = PrimitiveNode.Function.TRANMOS;
+        if (t[2].equals("pmos")) f = PrimitiveNode.Function.TRAPMOS;
+        ni.setPrimitiveFunction(f);
+    } else if (op.equals("SZ")) {
+        NodeInst ni = (NodeInst) ids.get(t[1]);
+        if (cur.getTechnology() == sch) {
+            // Schematics.setPrimitiveNodeSize recurses forever in 9.08: set the attributes
+            ni.newVar(Schematics.ATTR_WIDTH, new Double(Double.parseDouble(t[2])), ep);
+            ni.newVar(Schematics.ATTR_LENGTH, new Double(Double.parseDouble(t[3])), ep);
+        } else {
+            ni.setPrimitiveNodeSize(Double.parseDouble(t[2]), Double.parseDouble(t[3]), ep);
+        }
+    } else if (op.equals("VAR")) {
+        NodeInst ni = (NodeInst) ids.get(t[1]);
+        ni.newVar(t[2], t[3], ep);
+    } else if (op.equals("CVAR")) {
+        // CVAR NCC <annotation text>: NCC annotation on the current cell
+        StringBuffer sb = new StringBuffer();
+        for (int i = 2; i < t.length; i++) { if (i > 2) sb.append(" "); sb.append(t[i]); }
+        com.sun.electric.tool.ncc.basic.NccCellAnnotations.addNccAnnotation(cur, sb.toString(), ep);
+    } else if (op.equals("I")) {
+        Cell sub = findCell(t[2]);
+        NodeInst ni = NodeInst.makeInstance(sub, ep, new Point2D.Double(Double.parseDouble(t[3]), Double.parseDouble(t[4])), sub.getDefWidth(), sub.getDefHeight(), cur, Orientation.IDENT, t[1]);
+        ids.put(t[1], ni);
+    } else if (op.equals("A")) {
+        ArcProto ap = t[1].startsWith("sch:") ? sch.findArcProto(t[1].substring(4)) : tech.findArcProto(t[1]);
+        PortInst a = port(t[3], t[4]);
+        PortInst b = port(t[7], t[8]);
+        if (a == null || b == null) continue;
+        // "c" as the x coordinate = centre of the port
+        Point2D pa = t[5].equals("c") ? (Point2D) a.getCenter() : new Point2D.Double(Double.parseDouble(t[5]), Double.parseDouble(t[6]));
+        Point2D pb = t[9].equals("c") ? (Point2D) b.getCenter() : new Point2D.Double(Double.parseDouble(t[9]), Double.parseDouble(t[10]));
+        ArcInst arc = ArcInst.makeInstanceBase(ap, ep, Double.parseDouble(t[2]), a, b, pa, pb, null);
+        if (arc == null) { System.out.println("ERR line " + lineNo + " arc failed: " + line); nerr++; }
+    } else if (op.equals("E")) {
+        PortInst pi = port(t[2], t[3]);
+        PortCharacteristic pc = PortCharacteristic.BIDIR;
+        if (t[4].equals("in")) pc = PortCharacteristic.IN;
+        if (t[4].equals("out")) pc = PortCharacteristic.OUT;
+        if (t[4].equals("pwr")) pc = PortCharacteristic.PWR;
+        if (t[4].equals("gnd")) pc = PortCharacteristic.GND;
+        // fully qualified: another imported package also has a class named Export
+        com.sun.electric.database.hierarchy.Export ex =
+            com.sun.electric.database.hierarchy.Export.newInst(cur, pi, t[1], ep, pc);
+        if (ex == null) { System.out.println("ERR line " + lineNo + " export failed " + t[1]); nerr++; }
+    } else if (op.equals("SAVE")) {
+        Output.writeLibrary(lib, FileType.JELIB, false, false, false, 0);
+    } else if (op.equals("GDS")) {
+        Output.exportCellCommand(findCell(t[2]), VarContext.globalContext, t[1], FileType.GDS, null);
+    } else if (op.equals("DRC")) {
+        DRC.DRCPreferences dp = new DRC.DRCPreferences(false);
+        ErrorLogger el = Quick.checkDesignRules(dp, findCell(t[1]), null, null);
+        System.out.println("DRCRESULT " + t[1] + " errors=" + el.getNumLogs() + " warnings=" + el.getNumWarnings());
+        List logs = el.getAllLogs(findCell(t[1]));
+        int k = 0;
+        for (Iterator li = logs.iterator(); li.hasNext() && k < 400; k++) {
+            ErrorLogger.MessageLog m = (ErrorLogger.MessageLog) li.next();
+            System.out.println("DRCMSG " + m.getMessageString());
+        }
+    } else if (op.equals("DUMP")) {
+        PrintWriter pw = new PrintWriter(new FileWriter(t[2]));
+        dumpCell(findCell(t[1]), new AffineTransform(), pw);
+        pw.close();
+    } else if (op.equals("NCC")) {
+        NccOptions opt = new NccOptions();
+        opt.checkSizes = true;
+        opt.howMuchStatus = 1;
+        com.sun.electric.tool.ncc.result.NccResults r = Ncc.compare(findCell(t[1]), null, findCell(t[2]), null, opt);
+        System.out.println("NCCRESULT match=" + r.match() + " topology=" + r.topologyMatch() + " exports=" + r.exportMatch());
+        System.out.println(r.summary(true));
+    } else {
+        System.out.println("ERR line " + lineNo + " unknown op " + op); nerr++;
+    }
+}
+br.close();
+System.out.println("RUNTIME DONE errors=" + nerr);

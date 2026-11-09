@@ -1,0 +1,86 @@
+[
+ {
+  "element": "mcon, one S/D row",
+  "I_mA": 0.625,
+  "limit_mA": 9.719999999999999,
+  "ok": true,
+  "note": "27 cuts"
+ },
+ {
+  "element": "met1 row bar (all row current, one side)",
+  "I_mA": 0.625,
+  "limit_mA": 0.728,
+  "ok": true,
+  "note": "height 0.26 um"
+ },
+ {
+  "element": "via1, one row into one strap (whole row)",
+  "I_mA": 0.625,
+  "limit_mA": 1.16,
+  "ok": true,
+  "note": "4 cuts"
+ },
+ {
+  "element": "met2 strap at the plate edge",
+  "I_mA": 2.2916666666666665,
+  "limit_mA": 3.6679999999999997,
+  "ok": true,
+  "note": "width 1.31 um"
+ },
+ {
+  "element": "via2 node in vout plate (strap current)",
+  "I_mA": 2.2916666666666665,
+  "limit_mA": 2.88,
+  "ok": true,
+  "note": "6 cuts, 30 nodes in column 0"
+ },
+ {
+  "element": "met3 vout plate, full IL",
+  "I_mA": 50.0,
+  "limit_mA": 63.95399999999999,
+  "ok": true,
+  "note": "height 9.40 um"
+ },
+ {
+  "element": "met4 vout plate, full IL",
+  "I_mA": 50.0,
+  "limit_mA": 63.95399999999999,
+  "ok": true,
+  "note": "height 9.40 um"
+ },
+ {
+  "element": "via3 vout plate (if the pin is met4)",
+  "I_mA": 50.0,
+  "limit_mA": 384.47999999999996,
+  "ok": true,
+  "note": "801 cuts"
+ },
+ {
+  "element": "via2 node in vin plate (strap current)",
+  "I_mA": 2.1875,
+  "limit_mA": 2.88,
+  "ok": true,
+  "note": "6 cuts, 33 nodes in column 0"
+ },
+ {
+  "element": "met3 vin plate, full IL",
+  "I_mA": 50.0,
+  "limit_mA": 64.566,
+  "ok": true,
+  "note": "height 9.50 um"
+ },
+ {
+  "element": "met4 vin plate, full IL",
+  "I_mA": 50.0,
+  "limit_mA": 64.566,
+  "ok": true,
+  "note": "height 9.50 um"
+ },
+ {
+  "element": "via3 vin plate (if the pin is met4)",
+  "I_mA": 50.0,
+  "limit_mA": 384.0,
+  "ok": true,
+  "note": "800 cuts"
+ }
+]

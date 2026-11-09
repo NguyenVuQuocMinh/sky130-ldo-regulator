@@ -1,0 +1,20 @@
+.SUBCKT ldo vin vout gnd vref ibias
+Mmbn ibias ibias gnd gnd sky130_fd_pr__nfet_01v8 w=4u l=1u m=1
+Mmt tail ibias gnd gnd sky130_fd_pr__nfet_01v8 w=4u l=1u m=4
+Mm1 d1 vref tail gnd sky130_fd_pr__nfet_01v8 w=16u l=1u m=1
+Mm2 ea fb tail gnd sky130_fd_pr__nfet_01v8 w=16u l=1u m=1
+Mm3 d1 d1 vin vin sky130_fd_pr__pfet_01v8 w=16u l=1u m=1
+Mm4 ea d1 vin vin sky130_fd_pr__pfet_01v8 w=16u l=1u m=1
+Mmcs g ea gnd gnd sky130_fd_pr__nfet_01v8 w=10u l=0.5u m=2
+Mmd g g vin vin sky130_fd_pr__pfet_01v8 w=10u l=0.15u m=1
+Mmbl g d1 vin vin sky130_fd_pr__pfet_01v8 w=4u l=1u m=1
+Mmp vout g vin vin sky130_fd_pr__pfet_01v8 w=10u l=0.15u m=160
+Rr10 vout r1_1 gnd sky130_fd_pr__res_xhigh_po_0p35 l=4.27u w=0.35u
+Rr11 r1_1 fb gnd sky130_fd_pr__res_xhigh_po_0p35 l=4.27u w=0.35u
+Rr20 fb r2_1 gnd sky130_fd_pr__res_xhigh_po_0p35 l=4.27u w=0.35u
+Rr21 r2_1 r2_2 gnd sky130_fd_pr__res_xhigh_po_0p35 l=4.27u w=0.35u
+Rr22 r2_2 r2_3 gnd sky130_fd_pr__res_xhigh_po_0p35 l=4.27u w=0.35u
+Rr23 r2_3 gnd gnd sky130_fd_pr__res_xhigh_po_0p35 l=4.27u w=0.35u
+Rdum0 gnd gnd gnd sky130_fd_pr__res_xhigh_po_0p35 l=4.27u w=0.35u
+Rdum1 gnd gnd gnd sky130_fd_pr__res_xhigh_po_0p35 l=4.27u w=0.35u
+.ENDS ldo

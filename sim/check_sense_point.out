@@ -1,0 +1,5 @@
+divider-top node(s) ['vout.P0.poly']: V_drain 1.50948, V_sense 1.49546, V_pin 1.49474 V
+R_a (drain -> sense) = 280.3 mOhm, R_b (sense -> pin) = 14.4 mOhm
+schematic                   : PM 80.2 deg, UGF 1.52 MHz, T0 48.3 dB, GM 56.1 dB
+schematic + R_a/R_b split   : PM 95.5 deg, UGF 1.57 MHz, T0 47.0 dB, GM 49.4 dB
+post-layout (run_postlayout.py): PM 101.6 deg, UGF 1.37 MHz, T0 45.7 dB

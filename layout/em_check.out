@@ -1,0 +1,17 @@
+IL = 50 mA, 160 fingers, 312.5 uA per finger, strap bound 2.29 mA
+
+element                                            I (mA)  limit (mA)  ok   note
+mcon, one S/D row                                   0.625       9.720  yes  27 cuts
+met1 row bar (all row current, one side)            0.625       0.728  yes  height 0.26 um
+via1, one row into one strap (whole row)            0.625       1.160  yes  4 cuts
+met2 strap at the plate edge                        2.292       3.668  yes  width 1.31 um
+via2 node in vout plate (strap current)             2.292       2.880  yes  6 cuts, 30 nodes in column 0
+met3 vout plate, full IL                           50.000      63.954  yes  height 9.40 um
+met4 vout plate, full IL                           50.000      63.954  yes  height 9.40 um
+via3 vout plate (if the pin is met4)               50.000     384.480  yes  801 cuts
+via2 node in vin plate (strap current)              2.188       2.880  yes  6 cuts, 33 nodes in column 0
+met3 vin plate, full IL                            50.000      64.566  yes  height 9.50 um
+met4 vin plate, full IL                            50.000      64.566  yes  height 9.50 um
+via3 vin plate (if the pin is met4)                50.000     384.000  yes  800 cuts
+
+ALL WITHIN LIMITS

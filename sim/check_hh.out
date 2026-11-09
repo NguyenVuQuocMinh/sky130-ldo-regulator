@@ -1,0 +1,4 @@
+1. .op at 50 mA: ['v(vout) = 1.495896e+00']
+2. transient: VOUT at 49 us = 1.5005 V, at 260 us (50 mA settled) = 1.4959 V, min/max after step 1.4959/1.4959
+3. DC sweep: 6 of 500 points outside 1.4-1.6 V: 16.5 mA -> -2128 V, 20.2 mA -> -1.384 V, 20.6 mA -> 1.804 V, 22.9 mA -> 1.752 V, 45.0 mA -> 1.68 V, 50.0 mA -> 1.69 V
+   other points: 1.4959 .. 1.5005 V

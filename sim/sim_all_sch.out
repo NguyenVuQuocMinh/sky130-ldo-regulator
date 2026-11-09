@@ -1,0 +1,13 @@
+loop IL=  0.1 mA: T0=68.2 dB  UGF=42.7 kHz  PM=89.0 deg  GM=74.2 dB
+loop IL=    1 mA: T0=58.3 dB  UGF=125.1 kHz  PM=89.5 deg  GM=66.6 dB
+loop IL=   10 mA: T0=58.1 dB  UGF=821.1 kHz  PM=85.9 deg  GM=56.7 dB
+loop IL=   50 mA: T0=48.3 dB  UGF=1519.3 kHz  PM=80.2 deg  GM=56.1 dB
+PSRR IL=0.1 mA: dc 35.6, 1kHz 35.6, 100kHz 43.6, min 35.6, f_min 1.0
+PSRR IL=50 mA: dc 33.6, 1kHz 33.6, 100kHz 33.6, min 33.6, f_min 1.0
+load reg: {'v_light': 1.5006239, 'v_heavy': 1.49589592, 'dV': 0.004727979999999965}
+line IL=0.1 mA: slope=14.19 mV/V, VDO(1%)=76 mV, VOUT(1.7)=1.4991
+line IL=50 mA: slope=22.99 mV/V, VDO(1%)=142 mV, VOUT(1.7)=1.4930
+Iq (IL = 0.1 mA subtracted): {'at_1p8': 6.4664874e-05, 'max': 6.498125e-05}
+tran: {'v_light': 1.50051956, 'v_heavy': 1.49589472, 'v_end': 1.50051956, 'undershoot': 1.753999999998257e-05, 'overshoot': 0.0, 'dip_from_initial': 0.004642380000000168, 'peak_from_heavy': 0.0046248400000001855, 'settle_up': 0.0, 'settle_down': 9.300000000000063e-07}
+ESR sweep IL=0.1 mA: 0m: PM 89 GM 49dB, 5m: PM 89 GM 60dB, 10m: PM 89 GM 74dB, 20m: PM 89 GM 73dB, 50m: PM 90 GM 68dB, 100m: PM 92 GM 62dB, 200m: PM 95 GM 56dB, 500m: PM 106 GM 49dB, 1000m: PM 125 GM 43dB
+ESR sweep IL=50 mA: 0m: PM 69 GM 36dB, 5m: PM 75 GM 62dB, 10m: PM 80 GM 56dB, 20m: PM 91 GM 51dB, 50m: PM 116 GM 43dB, 100m: PM 107 GM 37dB, 200m: PM 93 GM 31dB, 500m: PM 73 GM 23dB, 1000m: PM 55 GM 18dB

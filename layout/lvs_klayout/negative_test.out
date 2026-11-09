@@ -1,0 +1,6 @@
+correct netlist                          MATCH     ok
+pass device m=150 instead of 160         MISMATCH  ok
+M2 gate on vref instead of fb            MISMATCH  ok
+one R2 unit l=5u instead of 4.27u        MISMATCH  ok
+MCS L=0.6u instead of 0.5u               MISMATCH  ok
+all as expected

@@ -1,0 +1,3 @@
+80 drain nodes: V_drain - V_pin mean 14.73 mV, min 13.55, max 16.18 mV -> R_route = 294.7 mOhm
+schematic, ESR = 10.0 mOhm: PM 80.2 deg, UGF 1.52 MHz, GM 56.1 dB
+schematic, ESR = 304.7 mOhm: PM 84.1 deg, UGF 25.10 MHz, GM 27.5 dB

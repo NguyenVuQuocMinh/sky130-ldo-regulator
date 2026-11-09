@@ -1,0 +1,5 @@
+coupling capacitors of the feedback net moved to ground: 224, total 4.82 fF
+0.1 mA, extracted           : PM 89.7 deg, UGF 43 kHz, max |T| above 100 MHz -16.1 dB
+0.1 mA, fb coupling removed : PM 89.7 deg, UGF 43 kHz, max |T| above 100 MHz -83.7 dB
+50 mA, extracted           : PM 101.6 deg, UGF 1369 kHz, max |T| above 100 MHz -18.2 dB
+50 mA, fb coupling removed : PM 100.1 deg, UGF 1447 kHz, max |T| above 100 MHz -37.2 dB
